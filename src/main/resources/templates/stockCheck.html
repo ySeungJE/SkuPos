@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}" />
+<body>
+<header>
+    <h1>입고 조회</h1>
+</header>
+
+<section>
+    <table>
+        <tr>
+            <th>입고 조회</th>
+        </tr>
+        <tr th:each="stockDay : ${stockDays}">
+            <td><a role="button" onclick="showDetail(this.id)" th:id="${stockDay}" th:text="'[ '+${stockDay}+' ]'"></a></td>
+        </tr>
+    </table>
+</section>
+
+<footer>
+    <p>--</p>
+</footer>
+<script>
+function showDetail(this_id) {
+        window.open('/stockDetail/'+this_id,"_self","");
+}
+</script>
+</body>
+</html>

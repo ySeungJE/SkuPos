@@ -5,8 +5,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <header style="height:45px">
     <h1 style="float:left">POS 시스템</h1>
-    <h1 th:if="${session['loginUser'].manager}==true" style="float:right" th:text="Manager"></h1>
-    <h1 th:if="${session['loginUser'].manager}==false" style="float:right" th:text="Staff"></h1>
+<!--    <h1 th:if="${session['loginUser'].manager}==true" style="float:right" th:text="Manager"></h1>-->
+<!--    <h1 th:if="${session['loginUser'].manager}==false" style="float:right" th:text="Staff"></h1>-->
+    <h1 style="float:right" th:text="Manager"></h1>
 </header>
 
 <main>
@@ -19,11 +20,11 @@
                 <th>가격</th>
                 <th>개수</th>
             </tr>
-            <tr th:each="item : ${itemList}">
-                <td th:text="${item.name}" th:id="'itemName'+${item.id}"></td>
-                <td th:text="${item.stock}" th:id="'itemStock'+${item.id}"></td>
-                <td th:text="${item.price}" th:id="'itemPrice'+${item.id}"></td>
-                <td><input type="number" value="0" min="0" th:id="'item'+${item.id}" class="itemNumber" required></td>
+            <tr th:each="item : ${itemList}" th:if="${item.exist}==true">
+                    <td th:text="${item.name}" th:id="'itemName'+${item.id}"></td>
+                    <td th:text="${item.stock}" th:id="'itemStock'+${item.id}"></td>
+                    <td th:text="${item.price}" th:id="'itemPrice'+${item.id}"></td>
+                    <td><input type="number" value="0" min="0" th:id="${item.name}" class="itemNumber" required></td>
             </tr>
         </table>
         <div id="total" style="float:right;">
@@ -33,10 +34,19 @@
             <button id="summary" style="margin-bottom:15px;">총합</button>
         </div>
         <div style="float:left; margin-left:15px;">
-            <button id="stockManage" style="margin-bottom:15px;" onclick="stockManage()">입고 관리</button>
+            <button id="itemAdd" style="margin-bottom:15px;" onclick="addItem()">상품 추가</button>
         </div>
-        <div style="text-align: right">
-            <br><br><br><br><br><button id="payment" onclick="dataSend()">계산하기</button>
+        <div style="float:left; margin-left:15px;">
+            <br><button id="itemDrop" style="margin-bottom:15px;" onclick="dropItem()">상품 삭제</button>
+        </div>
+        <div style="float:right; margin-right:15px;">
+            <br><button id="payment" onclick="dataSend()">계산하기</button>
+        </div>
+        <div style="float:right; margin-right:15px;">
+            <br><br><button id="stockManage" style="margin-bottom:15px;" onclick="stockCheck()">입고 조회</button>
+        </div>
+        <div style="float:left; margin-left:15px;">
+            <br><button style="margin-bottom:15px;" onclick="addStock()">상품 입고</button>
         </div>
     </section>
 
@@ -44,7 +54,7 @@
         <h2>일간 매출</h2>
         <table>
             <tr th:each="dayRecord : ${dayRecordList}">
-                <td><a th:href="@{'/record/'+${dayRecord.date}}" onclick="window.open(this.href, '_blank', 'width=350, height=550, left=800px, top=100px'); return false;"
+                <td><a th:href="@{'/record/'+${dayRecord.date}}" onclick="window.open(this.href, '_blank', 'width=350, height=550, left=660px, top=150px'); return false;"
                        th:id="${dayRecord.date}" th:text="'[ '+${dayRecord.date}+' ]  매출 : '+${dayRecord.price}+'원'"></a></td>
             </tr>
         </table>
@@ -54,7 +64,7 @@
         <h2>주간 매출</h2>
         <table>
             <tr th:each="weekRecord : ${weekRecordList}">
-                <td><a th:href="@{'/record/'+${weekRecord.date}}" onclick="window.open(this.href, '_blank', 'width=550, height=550, left=800px, top=100px'); return false;"
+                <td><a th:href="@{'/record/'+${weekRecord.date}}" onclick="window.open(this.href, '_blank', 'width=550, height=550, left=570px, top=150px'); return false;"
                        th:id="${weekRecord.date}" th:text="'[ '+${weekRecord.date}+' ]  매출 : '+${weekRecord.price}+'원'"></a></td>
             </tr>
         </table>
@@ -64,7 +74,7 @@
         <h2>월간 매출</h2>
         <table>
             <tr th:each="monthRecord : ${monthRecord}">
-                <td><a th:href="@{'/record/'+${monthRecord.key}}" onclick="window.open(this.href, '_blank', 'width=350, height=550, left=800px, top=100px'); return false;"
+                <td><a th:href="@{'/record/'+${monthRecord.key}}" onclick="window.open(this.href, '_blank', 'width=350, height=550, left=660px, top=150px'); return false;"
                        th:id="${monthRecord.key}"   th:text="'[ '+${monthRecord.key}+' ]  매출 : '+${monthRecord.value}+'원'"></a></td>
             </tr>
         </table>
@@ -80,11 +90,22 @@ function getElement(id){
 	return document.getElementById(id);
 }
 
-var total=0;
-
-function stockManage() {
-        window.open('/stockManage',"","width=350, height=550, left=800px, top=100px;");
+function addItem() {
+        window.open('/addItem',"","width=600, height=200, left=550px, top=250px;");
 }
+
+function dropItem() {
+        window.open('/dropItem',"","width=400, height=500, left=650px, top=150px;");
+}
+
+function stockCheck() {
+        window.open('/stockCheck',"","width=350, height=550, left=660px, top=150px;");
+}
+function addStock() {
+        window.open('/addStock',"","width=350, height=550, left=660px, top=150px;");
+}
+
+var total=0;
 
 getElement("summary").onclick = function(){
     var productTable = getElement("product-list").querySelector("table");
@@ -102,11 +123,11 @@ getElement("summary").onclick = function(){
 
     for (var i = 1; i < rows.length; i++) {
       var price = (rows[i].cells[2]).textContent;
-      var number = getElement('item'+i).value;
+      var number = getElement(rows[i].cells[0].textContent).value;
 
       total += parseInt(price*number);
     }
-    alert(total);
+    alert('총합 : '+total+'원');
     return total;
   }
 
@@ -125,7 +146,7 @@ function dataSend() {
     var itemData = [];
 
     for (var i = 1; i < rows.length; i++) {
-      var number = getElement('item'+i).value;
+      var number = getElement(rows[i].cells[0].textContent).value;;
       if(number>0) {
       var name = (rows[i].cells[0]).textContent;
 

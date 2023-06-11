@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}" />
+<body>
+<header>
+    <h1>상품 추가</h1>
+</header>
+    <form th:action="@{/addItem}" method="post">
+        <table>
+            <tr>
+                <th>이름</th>
+                <th>가격</th>
+                <th></th>
+            </tr>
+            <tr>
+                <td><input type="text" name="name" placeholder="상품 이름" required></td>
+                <td><input id="price" type="number" value="0" min="0" name="price" required></td>
+                <td><button type="submit" style="width:100px;"\>추가</button></td>
+            </tr>
+        </table>
+    </form>
+<script>
+</script>
+</body>
+<script>
+window.onunload = function(){
+    window.opener.location.href="/loginHome";
+}
+</script>
+</html>

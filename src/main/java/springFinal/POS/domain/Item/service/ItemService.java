@@ -1,14 +1,20 @@
 package springFinal.POS.domain.Item.service;
 
 import springFinal.POS.domain.Item.Item;
-import springFinal.POS.web.dto.ItemsData;
+import springFinal.POS.web.dto.ItemsDataDto;
 
 import java.util.List;
 
+import static springFinal.POS.domain.Item.repository.ItemRepository.*;
+
 public interface ItemService {
-    public void addStock(Item item, Integer stock, String date);
-    public Item save(Item item);
-    public List<Item> findAll();
-    public void itemSale(List<ItemsData> itemDataList);
-    void initItem();
+    void addStock(String name, Integer stock, String date);
+    Item save(Item item);
+    List<Item> findAll();
+    List<ItemMapping> findAllName();
+    void itemSale(List<ItemsDataDto> itemDataList);
+    void deleteItem(String itemName);
+    Item findByName(String itemName);
+
+    void recover(Item item);
 }

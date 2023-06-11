@@ -5,12 +5,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springFinal.POS.domain.Item.Item;
 import springFinal.POS.domain.Item.repository.ItemRepository;
-import springFinal.POS.web.dto.ItemsData;
+import springFinal.POS.web.dto.ItemsDataDto;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import static springFinal.POS.domain.Item.repository.ItemRepository.*;
 
 @Service
 @Transactional
@@ -18,19 +20,37 @@ import java.util.*;
 public class ItemServiceImpl implements ItemService{
     private final ItemRepository itemRepository;
     @Override
-    public void addStock(Item item, Integer stock, String date) {
-        item.addStock(stock, date);
+    public void addStock(String name, Integer stock, String date) {
+        findByName(name).addStock(stock, date);
     }
     @Override
     public Item save(Item item) {
         return itemRepository.save(item);
     }
     @Override
+    public void deleteItem(String itemName) {
+        itemRepository.findByName(itemName).orElse(null).deleteIt();
+    }
+    @Override
+    public void recover(Item item) {
+        item.recover();
+    }
+
+    @Override
+    public Item findByName(String itemName) {
+        return itemRepository.findByName(itemName).orElse(null);
+    }
+
+    @Override
     public List<Item> findAll() {
         return itemRepository.findAll();
     }
     @Override
-    public void itemSale(List<ItemsData> itemDataList) {
+    public List<ItemMapping> findAllName() {
+        return itemRepository.findAllBy(ItemMapping.class);
+    }
+    @Override
+    public void itemSale(List<ItemsDataDto> itemDataList) {
 
         DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -61,15 +81,5 @@ public class ItemServiceImpl implements ItemService{
             Item item = itemRepository.findByName(itemData.getItemName()).orElse(null);
             item.itemSale(itemData.getSaleNumber(), day, week, month);
         });
-    }
-    @Override
-    public void initItem() {
-        List<Item> items = new ArrayList<>();
-        items.add(save(Item.builder().name("크림빵").price(1500).salesVolume(0).stock(0).build()));
-        items.add(save(Item.builder().name("삼각김밥").price(1200).salesVolume(0).stock(0).build()));
-        items.add(save(Item.builder().name("미니족발").price(7500).salesVolume(0).stock(0).build()));
-        items.add(save(Item.builder().name("포카리스웨트").price(2500).salesVolume(0).stock(0).build()));
-        items.add(save(Item.builder().name("참이슬").price(1700).salesVolume(0).stock(0).build()));
-        items.add(save(Item.builder().name("테라피쳐").price(3500).salesVolume(0).stock(0).build()));
     }
 }

@@ -20,7 +20,7 @@ public class Item {
     private String name;
     private Integer price;
     private Integer stock;
-    private Integer salesVolume;
+    private Boolean exist;
     @ElementCollection
     @MapKeyColumn(name = "date_key")
     @Column(name = "stock")
@@ -41,6 +41,16 @@ public class Item {
     @Column(name = "month_volume")
     @Builder.Default
     private Map<String, Integer> monthSales = new HashMap<>();
+
+    //== 생성 메서드 ==//
+    public static Item createItem(ItemAddDto dto) {
+        return Item.builder()
+                .name(dto.getName())
+                .price(dto.getPrice())
+                .stock(0)
+                .exist(true).build();
+
+    }
 
     //== 비즈니스 메서드 ==//
     /**
@@ -80,5 +90,11 @@ public class Item {
         } else {
             monthSales.put(month, volume);
         }
+    }
+    public void deleteIt() {
+        this.exist=false;
+    }
+    public void recover() {
+        this.exist=true;
     }
 }

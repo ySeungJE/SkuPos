@@ -64,6 +64,11 @@ public class MyPos {
             monthTurnover.put(month, summary);
         }
     }
+
+    /**
+     * 입고 날짜 저장 리스트
+     * @param day
+     */
     public void addStockDay(String day) {
         this.stockDay.add(day);
     }

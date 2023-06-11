@@ -3,7 +3,7 @@
 <head th:replace="~{fragments/header :: header}" />
 <body>
 <header>
-    <h1>제품 입고</h1>
+    <h1>상품 입고</h1>
 </header>
 
 <section>
@@ -13,9 +13,10 @@
                 <th>이름</th>
                 <th>입고 수량</th>
             </tr>
-            <tr th:each="item : ${items}">
+            <tr th:each="item : ${items}" th:if="${item.exist}==true">
                 <td th:text="${item.name}"></td>
                 <td><input type="number" value="0" min="0" th:id="${item.id}" name="itemNumber" class="itemNumber" required></td>
+                <td hidden="hidden"><input type="text" th:value="${item.name}" name="itemName" style="border: 0; width:150px" readonly></td>
             </tr>
         </table>
         <div style="text-align:center">
@@ -26,6 +27,9 @@
 <footer>
 </footer>
 <script>
+window.onunload = function(){
+    window.opener.location.href="/loginHome";
+}
 </script>
 </body>
 </html>

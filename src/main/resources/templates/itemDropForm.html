@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}" />
+<body>
+<header>
+    <h1>상품 삭제</h1>
+</header>
+<form th:action="@{/dropItem}" method="post">
+    <table>
+        <tr>
+            <th>이름</th>
+            <th>삭제 체크</th>
+        </tr>
+        <tr th:each="itemName : ${itemNames}" th:if="${itemName.exist}==true">
+            <td th:text="${itemName.name}"></td>
+            <td><input id="dropCheck" type="checkbox" name="dropped" th:value="${itemName.name}" th:checked="false"></td>
+        </tr>
+    </table>
+    <span style="text-align:right; margin-right:15px;"><button id="dropButton" type="submit" style="width:100px;">삭제</button></span>
+</form>
+<script>
+window.onunload = function(){
+    window.opener.location.href="/loginHome";
+}
+</script>
+</body>
+</html>

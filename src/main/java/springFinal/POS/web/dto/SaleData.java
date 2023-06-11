@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class SaleData {
     private Integer summary;
-    private List<ItemsData> itemDataList;
+    private List<ItemsDataDto> itemDataList;
 }

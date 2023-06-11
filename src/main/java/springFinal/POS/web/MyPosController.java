@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
+import static springFinal.POS.domain.Item.repository.ItemRepository.*;
 
 @Slf4j
 @Controller
@@ -32,6 +33,13 @@ public class MyPosController {
     private final ItemService itemService;
     private final MyPosService myPosService;
     public static final String LOGIN_USER = "loginUser";
+
+    @GetMapping("/")
+    public String notLoginHome(@SessionAttribute(name = LOGIN_USER, required = false) User loginUser) {
+        if (loginUser == null) {
+            return "notLoginHome";
+        } else return "redirect:/loginHome";
+    }
 
     @GetMapping("/join")
     public String joinForm() {
@@ -60,13 +68,6 @@ public class MyPosController {
         return "redirect:/";
     }
 
-    @GetMapping("/")
-    public String notLoginHome(@SessionAttribute(name = LOGIN_USER, required = false) User loginUser) {
-        if (loginUser == null) {
-            return "notLoginHome";
-        } else return "redirect:/loginHome";
-    }
-
     @GetMapping("loginHome")
     public String loginHome(Model model) {
         MyPos myPos = myPosService.getPos();
@@ -81,7 +82,34 @@ public class MyPosController {
         model.addAttribute("weekRecordList", weekRecord);
         return "loginHome";
     }
+    @GetMapping("/addItem")
+    public String addItemForm() {
+        return "itemAddForm";
+    }
 
+    @PostMapping("/addItem")
+    public String addItem(@ModelAttribute ItemAddDto dto) {
+        Item item = itemService.findByName(dto.getName());
+
+        if (item == null) itemService.save(Item.createItem(dto));
+        else itemService.recover(item);
+
+        return "itemAddForm";
+    }
+    @GetMapping("/dropItem")
+    public String dropItemForm(Model model) {
+        List<ItemMapping> allName = itemService.findAllName();
+
+        model.addAttribute("itemNames", allName);
+        return "itemDropForm";
+    }
+    @PostMapping("/dropItem")
+    public String dropItem(@ModelAttribute DropItemDto items) {
+        items.getDropped().forEach(name-> {
+            itemService.deleteItem(name);
+        });
+        return "redirect:/dropItem";
+    }
     @PostMapping("/payment")
     @ResponseBody
     public MessageDTO payment(Model model, @RequestBody SaleData saleData) {
@@ -140,10 +168,10 @@ public class MyPosController {
         model.addAttribute("saleDetailList", saleDetailDtoList);
         return "saleDetailPage";
     }
-    @GetMapping("/stockManage")
+    @GetMapping("/stockCheck")
     public String stockManage(Model model) {
         model.addAttribute("stockDays", myPosService.getPos().getStockDay());
-        return "stockManage";
+        return "stockCheck";
     }
     @GetMapping("/stockDetail/{stockDay}")
     public String stockManage(Model model, @PathVariable String stockDay) {
@@ -167,27 +195,26 @@ public class MyPosController {
     @PostMapping("/addStock") // 지린다 그냥... 이렇게 하면 requestBody 로 json 배열도, ModelAttribute로 form data 배열도 받을 수있음ㅋㅋㅋㅋㅋ
     public String addStock(@ModelAttribute AddStockDto numbers) {
 
-        List<Item> all = itemService.findAll();
         List<Integer> number = numbers.getItemNumber();
+        List<String> name = numbers.getItemName();
+
 
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String date = LocalDateTime.now().format(format);
 
         myPosService.addStockDay(date);
 
-        for (int i = 0; i < numbers.getItemNumber().size(); i++) {
-            itemService.addStock(all.get(i), number.get(i), date);
+        for (int i = 0; i < number.size(); i++) {
+            itemService.addStock(name.get(i), number.get(i), date);
         }
 
-        return "redirect:/stockManage";
+        return "redirect:/addStock";
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
-        log.info("test data init");
+        log.info("MyPos init");
         myPosService.startPos();
-        itemService.initItem();
-        userService.initUser();
     }
 
     //== 비즈니스 메서드 ==//

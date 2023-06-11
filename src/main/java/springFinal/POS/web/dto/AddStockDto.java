@@ -7,4 +7,5 @@ import java.util.List;
 @Data
 public class AddStockDto {
     private List<Integer> itemNumber;
+    private List<String> itemName;
 }

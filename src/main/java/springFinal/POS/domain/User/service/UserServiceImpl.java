@@ -22,10 +22,4 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByLoginId(loginDto.getLoginId()).orElse(null);
         return user.getPassword().equals(loginDto.getPassword()) ? user : null;
     }
-    @Override
-    public void initUser() {
-        join(User.builder().name("매니저").loginId("manager").password("123").manager(true).build());
-        join(User.builder().name("직원1").loginId("staff1").password("123").manager(false).build());
-        join(User.builder().name("직원2").loginId("staff2").password("123").manager(false).build());
-    }
 }
