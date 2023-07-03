@@ -12,7 +12,7 @@
             <th>이름</th>
             <th>입고 수량</th>
         </tr>
-        <tr th:each="stockDetail : ${stockDetails}">
+        <tr th:each="stockDetail : ${stockDetails}" th:if="${stockDetail.exist}==true">
             <td th:text="${stockDetail.name}"></td>
             <td th:text="${stockDetail.number}"></td>
         </tr>

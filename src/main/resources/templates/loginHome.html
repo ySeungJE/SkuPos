@@ -5,9 +5,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <header style="height:45px">
     <h1 style="float:left">POS 시스템</h1>
-<!--    <h1 th:if="${session['loginUser'].manager}==true" style="float:right" th:text="Manager"></h1>-->
-<!--    <h1 th:if="${session['loginUser'].manager}==false" style="float:right" th:text="Staff"></h1>-->
-    <h1 style="float:right" th:text="Manager"></h1>
+    <h1 th:if="${session['loginUser'].manager}==true" style="float:right" th:text="Manager"></h1>
+    <h1 th:if="${session['loginUser'].manager}==false" style="float:right" th:text="Staff"></h1>
+<!--    <h1 style="float:right" th:text="Manager"></h1>-->
 </header>
 
 <main>
@@ -34,10 +34,10 @@
             <button id="summary" style="margin-bottom:15px;">총합</button>
         </div>
         <div style="float:left; margin-left:15px;">
-            <button id="itemAdd" style="margin-bottom:15px;" onclick="addItem()">상품 추가</button>
+            <button id="itemAdd" style="margin-bottom:15px;" onclick="addItem()" th:disabled="${session['loginUser'].manager}==false">상품 추가</button>
         </div>
         <div style="float:left; margin-left:15px;">
-            <br><button id="itemDrop" style="margin-bottom:15px;" onclick="dropItem()">상품 삭제</button>
+            <br><button id="itemDrop" style="margin-bottom:15px;" onclick="dropItem()" th:disabled="${session['loginUser'].manager}==false">상품 삭제</button>
         </div>
         <div style="float:right; margin-right:15px;">
             <br><button id="payment" onclick="dataSend()">계산하기</button>

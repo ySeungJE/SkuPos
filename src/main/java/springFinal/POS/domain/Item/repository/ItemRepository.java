@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface ItemRepository extends JpaRepository<Item, Long> {
     Optional<Item> findByName(String name);
     <T> List<T> findAllBy(Class<T> type);
+
     List<Item> findAll();
 
     //== 특정 컬럼 조회 인터페이스 ==//

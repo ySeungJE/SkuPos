@@ -2,6 +2,7 @@ package springFinal.POS.web;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -25,7 +26,6 @@ import java.util.*;
 import static java.util.stream.Collectors.toList;
 import static springFinal.POS.domain.Item.repository.ItemRepository.*;
 
-@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class MyPosController {
@@ -178,7 +178,7 @@ public class MyPosController {
         List<Item> all = itemService.findAll();
 
         List<StockDetailDto> collect = itemService.findAll().stream()
-                .map(item -> new StockDetailDto(item.getName(), item.getDateStock().get(stockDay)))
+                .map(item -> new StockDetailDto(item.getExist(), item.getName(), item.getDateStock().get(stockDay)))
                 .collect(toList());
 
         model.addAttribute("stockDetails", collect);
@@ -192,8 +192,8 @@ public class MyPosController {
         return "addStockForm";
     }
 
-    @PostMapping("/addStock") // 지린다 그냥... 이렇게 하면 requestBody 로 json 배열도, ModelAttribute로 form data 배열도 받을 수있음ㅋㅋㅋㅋㅋ
-    public String addStock(@ModelAttribute AddStockDto numbers) {
+    @PostMapping("/addStock")
+    public String addStock(@Valid @ModelAttribute AddStockDto numbers) {
 
         List<Integer> number = numbers.getItemNumber();
         List<String> name = numbers.getItemName();
@@ -213,7 +213,6 @@ public class MyPosController {
 
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
-        log.info("MyPos init");
         myPosService.startPos();
     }
 

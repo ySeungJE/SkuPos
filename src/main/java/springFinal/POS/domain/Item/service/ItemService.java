@@ -15,6 +15,5 @@ public interface ItemService {
     void itemSale(List<ItemsDataDto> itemDataList);
     void deleteItem(String itemName);
     Item findByName(String itemName);
-
     void recover(Item item);
 }
