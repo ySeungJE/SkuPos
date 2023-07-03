@@ -1,7 +1,6 @@
 package springFinal.POS.domain.Item;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import springFinal.POS.web.dto.ItemAddDto;
