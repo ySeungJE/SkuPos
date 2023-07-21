@@ -5,7 +5,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <header style="height:45px">
     <h1 style="float:left">POS 시스템</h1>
-    <h1 style="float:right" th:text="Manager"></h1>
+    <h1 th:if="${session['loginUser'].manager}==true" style="float:right" th:text="Manager"></h1>
+    <h1 th:if="${session['loginUser'].manager}==false" style="float:right" th:text="Staff"></h1>
 </header>
 
 <main>
