@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}" />
+<body>
+<header>
+    <h1 th:text="'[ '+${date}+' ] 매출'"></h1>
+</header>
+
+<section>
+    <table>
+        <tr>
+            <th>이름</th>
+            <th>판매 수량</th>
+            <th>매출</th>
+        </tr>
+        <tr th:each="saleDetail : ${saleDetailList}">
+            <td th:text="${saleDetail.name}" id="name"></td>
+            <td th:text="${saleDetail.number}" id="number"></td>
+            <td th:text="${saleDetail.price}+'원'" id="price"></td>
+        </tr>
+    </table>
+    <div style="text-align:right"><h1 th:text="'총 매출 : '+${turnover}+'원'"></h1></div>
+</section>
+
+<footer>
+    <p th:text="'최다 판매 제품 : '+${bestItem}"></p>
+</footer>
+</body>
+</html>

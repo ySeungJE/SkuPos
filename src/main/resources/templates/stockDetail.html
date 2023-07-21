@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}" />
+<body>
+<header>
+    <h1 th:text="'[ '+${stockDay}+'] 입고'"></h1>
+</header>
+
+<section>
+    <table>
+        <tr>
+            <th>이름</th>
+            <th>입고 수량</th>
+        </tr>
+        <tr th:each="stockDetail : ${stockDetails}">
+            <td th:text="${stockDetail.name}"></td>
+            <td th:text="${stockDetail.number}"></td>
+        </tr>
+    </table>
+</section>
+
+<footer>
+    <p>--</p>
+</footer>
+<script>
+</script>
+</body>
+</html>

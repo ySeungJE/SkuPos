@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header">
+    <title>POS 시스템</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+    a {
+      text-decoration: none;
+      color: black;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+    }
+    h1 {
+      margin: 0;
+    }
+    main {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+    }
+   section {
+      flex-basis: 30%;
+      background-color: #f9f9f9;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    h2 {
+      margin-top: 0;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    label {
+      margin-bottom: 10px;
+    }
+    input {
+      padding: 8px;
+      font-size: 16px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ccc;
+    }
+    #total-price {
+      font-weight: bold;
+      text-align: right;
+    }
+    #payment {
+      text-align: right;
+    }
+    button {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #555;
+    }
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      width: 100%;
+      position : fixed; bottom : 0;
+    }
+    .itemNumber {
+        width:35px;
+    }
+  </style>
+</head>

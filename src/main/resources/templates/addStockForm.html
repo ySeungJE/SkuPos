@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}" />
+<body>
+<header>
+    <h1>제품 입고</h1>
+</header>
+
+<section>
+    <form th:action="@{/addStock}" method="post">
+        <table>
+            <tr>
+                <th>이름</th>
+                <th>입고 수량</th>
+            </tr>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.name}"></td>
+                <td><input type="number" value="0" min="0" th:id="${item.id}" name="itemNumber" class="itemNumber" required></td>
+            </tr>
+        </table>
+        <div style="text-align:center">
+        <button type="submit" style="margin-bottom:45px; width:100px;">입고</button>
+        </div>
+    </form>
+</section>
+<footer>
+</footer>
+<script>
+</script>
+</body>
+</html>

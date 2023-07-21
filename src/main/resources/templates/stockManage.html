@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}" />
+<body>
+<header>
+    <h1>입고 관리</h1>
+</header>
+
+<section>
+    <table>
+        <tr>
+            <th>입고 일자</th>
+        </tr>
+        <tr th:each="stockDay : ${stockDays}">
+            <td><a role="button" onclick="showProfile(this.id)" th:id="${stockDay}" th:text="'[ '+${stockDay}+' ]'"></a></td>
+        </tr>
+    </table>
+    <div style="text-align:center"><button id="addStock" style="margin-bottom:55px;" onclick="addStock()">제품 입고</button></div>
+</section>
+
+<footer>
+    <p>--</p>
+</footer>
+<script>
+function showProfile(this_id) {
+        window.open('/stockDetail/'+this_id,"_self","width=550, height=550, left=800px, top=100px;");
+}
+function addStock() {
+        window.open('/addStock',"_self","width=450, height=550, left=800px, top=100px;");
+}
+</script>
+</body>
+</html>

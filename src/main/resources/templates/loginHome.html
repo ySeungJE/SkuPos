@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}" />
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<header style="height:45px">
+    <h1 style="float:left">POS 시스템</h1>
+    <h1 style="float:right" th:text="Manager"></h1>
+</header>
+
+<main>
+    <section id="product-list" style="overflow-y: scroll; height: 650px;">
+        <h2>제품 목록</h2>
+        <table>
+            <tr>
+                <th>이름</th>
+                <th>재고</th>
+                <th>가격</th>
+                <th>개수</th>
+            </tr>
+            <tr th:each="item : ${itemList}">
+                <td th:text="${item.name}" th:id="'itemName'+${item.id}"></td>
+                <td th:text="${item.stock}" th:id="'itemStock'+${item.id}"></td>
+                <td th:text="${item.price}" th:id="'itemPrice'+${item.id}"></td>
+                <td><input type="number" value="0" min="0" th:id="'item'+${item.id}" class="itemNumber" required></td>
+            </tr>
+        </table>
+        <div id="total" style="float:right;">
+            <p id="test">총 가격: 0원</p>
+        </div>
+        <div style="float:right; margin-right:15px;">
+            <button id="summary" style="margin-bottom:15px;">총합</button>
+        </div>
+        <div style="float:left; margin-left:15px;">
+            <button id="stockManage" style="margin-bottom:15px;" onclick="stockManage()">입고 관리</button>
+        </div>
+        <div style="text-align: right">
+            <br><br><br><br><br><button id="payment" onclick="dataSend()">계산하기</button>
+        </div>
+    </section>
+
+    <section id="turnover-day" style="overflow-y: scroll; height: 650px;">
+        <h2>일간 매출</h2>
+        <table>
+            <tr th:each="dayRecord : ${dayRecordList}">
+                <td><a th:href="@{'/record/'+${dayRecord.date}}" onclick="window.open(this.href, '_blank', 'width=350, height=550, left=800px, top=100px'); return false;"
+                       th:id="${dayRecord.date}" th:text="'[ '+${dayRecord.date}+' ]  매출 : '+${dayRecord.price}+'원'"></a></td>
+            </tr>
+        </table>
+    </section>
+    
+    <section id="turnover-week" style="overflow-y: scroll; height: 650px;">
+        <h2>주간 매출</h2>
+        <table>
+            <tr th:each="weekRecord : ${weekRecordList}">
+                <td><a th:href="@{'/record/'+${weekRecord.date}}" onclick="window.open(this.href, '_blank', 'width=550, height=550, left=800px, top=100px'); return false;"
+                       th:id="${weekRecord.date}" th:text="'[ '+${weekRecord.date}+' ]  매출 : '+${weekRecord.price}+'원'"></a></td>
+            </tr>
+        </table>
+    </section>
+
+    <section id="turnover-month" style="overflow-y: scroll; height: 650px;">
+        <h2>월간 매출</h2>
+        <table>
+            <tr th:each="monthRecord : ${monthRecord}">
+                <td><a th:href="@{'/record/'+${monthRecord.key}}" onclick="window.open(this.href, '_blank', 'width=350, height=550, left=800px, top=100px'); return false;"
+                       th:id="${monthRecord.key}"   th:text="'[ '+${monthRecord.key}+' ]  매출 : '+${monthRecord.value}+'원'"></a></td>
+            </tr>
+        </table>
+    </section>
+
+</main>
+<footer>
+    <h1 th:text="'잔고 : ' + ${balance}+'원'" style="padding:20px"></h1>
+</footer>
+<script>
+
+function getElement(id){
+	return document.getElementById(id);
+}
+
+var total=0;
+
+function stockManage() {
+        window.open('/stockManage',"","width=350, height=550, left=800px, top=100px;");
+}
+
+getElement("summary").onclick = function(){
+    var productTable = getElement("product-list").querySelector("table");
+    var rows = productTable.rows;
+
+    // 총 가격 업데이트
+    total = calculateTotalPrice();
+    updateTotalPrice(total);
+}
+
+  function calculateTotalPrice() {
+    var productTable = getElement("product-list").querySelector("table");
+    var rows = productTable.rows;
+    var total = 0;
+
+    for (var i = 1; i < rows.length; i++) {
+      var price = (rows[i].cells[2]).textContent;
+      var number = getElement('item'+i).value;
+
+      total += parseInt(price*number);
+    }
+    alert(total);
+    return total;
+  }
+
+    // 총 가격을 업데이트하는 함수
+  function updateTotalPrice(total) {
+    var totalDiv = getElement("total");
+    totalDiv.innerHTML = "<p >총 가격: " + total + "원</p>";
+  }
+
+
+function dataSend() {
+
+    var productTable = getElement("product-list").querySelector("table");
+    var rows = productTable.rows;
+
+    var itemData = [];
+
+    for (var i = 1; i < rows.length; i++) {
+      var number = getElement('item'+i).value;
+      if(number>0) {
+      var name = (rows[i].cells[0]).textContent;
+
+      var data = {
+          itemName : name,
+          saleNumber : number
+      };
+
+
+      itemData.push(data);
+      }
+    }
+
+   $.ajax({
+     method: 'post',
+     url: '/payment',
+     traditional: true,
+     data: JSON.stringify({
+       summary : total,
+       itemDataList : itemData
+     }),
+     dataType: 'json',
+     contentType: "application/json; charset=utf-8",
+     success : function(res) {
+          alert(res.result);
+          location.reload();
+     }
+   });
+}
+</script>
+</body>
+</html>
+
