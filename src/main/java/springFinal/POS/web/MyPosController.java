@@ -210,11 +210,11 @@ public class MyPosController {
 
         return "redirect:/addStock";
     }
-
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
         myPosService.startPos();
     }
+
 
     //== 비즈니스 메서드 ==//
     /**
