@@ -51,7 +51,6 @@ public class Item {
                 .price(dto.getPrice())
                 .stock(0)
                 .exist(true).build();
-
     }
 
     //== 비즈니스 메서드 ==//
