@@ -1,6 +1,7 @@
 package springFinal.POS.domain.Item.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springFinal.POS.domain.Item.Item;
@@ -17,6 +18,7 @@ import static springFinal.POS.domain.Item.repository.ItemRepository.*;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class ItemServiceImpl implements ItemService{
     private final ItemRepository itemRepository;
     @Override

@@ -36,15 +36,18 @@
         <div style="float:left; margin-left:15px;">
             <button id="itemAdd" style="margin-bottom:15px;" onclick="addItem()" th:disabled="${session['loginUser'].manager}==false">상품 추가</button>
         </div>
+        <br><br><br><br><br>
         <div style="float:left; margin-left:15px;">
             <br><button id="itemDrop" style="margin-bottom:15px;" onclick="dropItem()" th:disabled="${session['loginUser'].manager}==false">상품 삭제</button>
         </div>
         <div style="float:right; margin-right:15px;">
             <br><button id="payment" onclick="dataSend()">계산하기</button>
         </div>
-        <div style="float:right; margin-right:15px;">
+        <br><br><br><br><br>
+        <div style="float:left; margin-left:15px;">
             <br><br><button id="stockManage" style="margin-bottom:15px;" onclick="stockCheck()">입고 조회</button>
         </div>
+        <br><br><br><br><br><br><br>
         <div style="float:left; margin-left:15px;">
             <br><button style="margin-bottom:15px;" onclick="addStock()">상품 입고</button>
         </div>

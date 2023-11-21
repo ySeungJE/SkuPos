@@ -2,7 +2,6 @@ package springFinal.POS.web;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -26,6 +25,7 @@ import java.util.*;
 import static java.util.stream.Collectors.toList;
 import static springFinal.POS.domain.Item.repository.ItemRepository.*;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class MyPosController {
@@ -58,7 +58,7 @@ public class MyPosController {
         User loginUser = userService.login(loginDto);
 
         if (loginUser == null) {
-            return "home";
+            return "notLoginHome";
         }
 
         HttpSession session = request.getSession();
@@ -113,6 +113,8 @@ public class MyPosController {
     @PostMapping("/payment")
     @ResponseBody
     public MessageDTO payment(Model model, @RequestBody SaleData saleData) {
+        if(saleData.getSummary()==0) return new MessageDTO("하나 이상의 상품을 담아주세요");
+        log.info("{}", saleData);
         itemService.itemSale(saleData.getItemDataList());
         myPosService.updateTurnover(saleData.getSummary());
         return new MessageDTO("결제 완료되었습니다!");
@@ -193,7 +195,7 @@ public class MyPosController {
     }
 
     @PostMapping("/addStock")
-    public String addStock(@Valid @ModelAttribute AddStockDto numbers) {
+    public String addStock(@ModelAttribute AddStockDto numbers) {
 
         List<Integer> number = numbers.getItemNumber();
         List<String> name = numbers.getItemName();
