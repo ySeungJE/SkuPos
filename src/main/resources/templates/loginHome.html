@@ -88,7 +88,8 @@
     <h1 th:text="'잔고 : ' + ${balance}+'원'" style="padding:20px"></h1>
 </footer>
 <script>
-
+var IMP = window.IMP;
+IMP.init("imp46165872");
 function getElement(id){
 	return document.getElementById(id);
 }
@@ -179,11 +180,14 @@ function dataSend() {
      dataType: 'json',
      contentType: "application/json; charset=utf-8",
      success : function(res) {
+          // requestPay();
           alert(res.result);
           location.reload();
      }
    });
 }
+
+
 </script>
 </body>
 </html>
