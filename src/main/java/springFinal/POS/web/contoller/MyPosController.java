@@ -1,4 +1,4 @@
-package springFinal.POS.web;
+package springFinal.POS.web.contoller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -15,15 +15,19 @@ import springFinal.POS.domain.Pos.MyPos;
 import springFinal.POS.domain.Pos.service.MyPosService;
 import springFinal.POS.domain.User.User;
 import springFinal.POS.domain.User.service.UserService;
-import springFinal.POS.web.dto.MessageDTO;
+import springFinal.POS.domain.order.Order;
+import springFinal.POS.domain.order.service.OrderService;
+import springFinal.POS.domain.payment.service.PaymentService;
 import springFinal.POS.web.dto.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
-import static springFinal.POS.domain.Item.repository.ItemRepository.*;
+import static springFinal.POS.domain.Item.repository.ItemRepository.ItemMapping;
 
 @Slf4j
 @Controller
@@ -32,10 +36,13 @@ public class MyPosController {
     private final UserService userService;
     private final ItemService itemService;
     private final MyPosService myPosService;
+    private final PaymentService paymentService;
+    private final OrderService orderService;
     public static final String LOGIN_USER = "loginUser";
 
     @GetMapping("/")
     public String notLoginHome(@SessionAttribute(name = LOGIN_USER, required = false) User loginUser) {
+        log.info("{}", loginUser);
         if (loginUser == null) {
             return "notLoginHome";
         } else return "redirect:/loginHome";
@@ -56,7 +63,7 @@ public class MyPosController {
     public String login(@ModelAttribute LoginDto loginDto,
                         HttpServletRequest request) {
         User loginUser = userService.login(loginDto);
-
+        log.info("로그인 회원 : {}", loginUser);
         if (loginUser == null) {
             return "notLoginHome";
         }
@@ -112,12 +119,22 @@ public class MyPosController {
     }
     @PostMapping("/payment")
     @ResponseBody
-    public MessageDTO payment(Model model, @RequestBody SaleData saleData) {
+    public MessageDTO payment(Model model, @RequestBody SaleData saleData, HttpServletRequest request) {
         if(saleData.getSummary()==0) return new MessageDTO("하나 이상의 상품을 담아주세요");
-        log.info("{}", saleData);
+        User sessionUser = userService.getSessionUser(request);
+
+        List<String> collect = saleData.getItemDataList().stream().map(dto ->
+                dto.getItemName()).collect(toList());
+
         itemService.itemSale(saleData.getItemDataList());
         myPosService.updateTurnover(saleData.getSummary());
-        return new MessageDTO("결제 완료되었습니다!");
+        Order order = orderService.itemOrder(sessionUser.getName(), Long.valueOf(saleData.getSummary()), collect);
+
+        RequestPayDto requestDto = paymentService.findRequestDto(order.getOrderUid());
+
+        log.info("{}", requestDto);
+
+        return new MessageDTO("결제 완료되었습니다!", requestDto);
     }
     @GetMapping("/record/{dayOrMonth}")
     public String payment(Model model, @PathVariable String dayOrMonth) {

@@ -1,6 +1,8 @@
 package springFinal.POS;
 
 
+import com.siot.IamportRestClient.IamportClient;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -18,6 +20,14 @@ public class WebConfig implements WebMvcConfigurer {
                 .order(1)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/", "/join", "/login", "/error", "/notLoginUser");
+    }
+
+    String apiKey = "5874574837427237";
+    String secretKey = "jAMTXhZI0eRE46qwC00y4tBUQy9KGwuLO38ny4ccuRJlQ3TwRkrNDJ6ny2hMu8H5oF3yPJzr4TboNQ2b";
+
+    @Bean
+    public IamportClient iamportClient() {
+        return new IamportClient(apiKey, secretKey);
     }
 }
 

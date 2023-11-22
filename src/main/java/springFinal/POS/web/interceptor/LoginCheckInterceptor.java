@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import static springFinal.POS.web.MyPosController.LOGIN_USER;
+import static springFinal.POS.web.contoller.MyPosController.LOGIN_USER;
 
 
 @Slf4j

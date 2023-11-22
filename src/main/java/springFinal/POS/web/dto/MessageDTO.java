@@ -7,5 +7,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class MessageDTO {
     private String result;
+    private RequestPayDto payDto;
 
+    public MessageDTO(String result) {
+        this.result = result;
+    }
 }
