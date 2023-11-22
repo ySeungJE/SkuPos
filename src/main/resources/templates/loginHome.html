@@ -3,6 +3,7 @@
 <head th:replace="~{fragments/header :: header}" />
 <body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 <header style="height:45px">
     <h1 style="float:left">POS 시스템</h1>
     <h1 th:if="${session['loginUser'].manager}==true" style="float:right" th:text="Manager"></h1>
@@ -88,7 +89,8 @@
     <h1 th:text="'잔고 : ' + ${balance}+'원'" style="padding:20px"></h1>
 </footer>
 <script>
-
+var IMP = window.IMP;
+IMP.init("imp46165872");
 function getElement(id){
 	return document.getElementById(id);
 }
@@ -179,10 +181,57 @@ function dataSend() {
      dataType: 'json',
      contentType: "application/json; charset=utf-8",
      success : function(res) {
-          alert(res.result);
-          location.reload();
+         requestPay(res.payDto);
      }
    });
+}
+function requestPay(payDto) {
+
+    var orderUid = payDto.order_uid;
+    var itemName = payDto.item_name;
+    var paymentPrice = payDto.payment_price;
+    var buyerName = payDto.buyer_name;
+    var buyerEmail = payDto.buyer_email;
+    var buyerAddress = payDto.buyer_address;
+
+    IMP.request_pay({
+            pg : 'html5_inicis.INIpayTest',
+            pay_method : 'card',
+            merchant_uid: orderUid, // 주문 번호
+            name : itemName, // 상품 이름
+            amount : paymentPrice, // 상품 가격
+            buyer_email : buyerEmail, // 구매자 이메일
+            buyer_name : buyerName, // 구매자 이름
+            buyer_tel : '010-1234-5678', // 임의의 값
+            buyer_addr : buyerAddress, // 구매자 주소
+            buyer_postcode : '123-456', // 임의의 값
+        },
+        function(rsp) {
+            if (rsp.success) {
+                alert('call back!!: ' + JSON.stringify(rsp));
+                // 결제 성공 시: 결제 승인 또는 가상계좌 발급에 성공한 경우
+                // jQuery로 HTTP 요청
+                jQuery.ajax({
+                    url: "/paymentProcess",
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    data: JSON.stringify({
+                        "payment_uid": rsp.imp_uid,      // 결제 고유번호
+                        "order_uid": rsp.merchant_uid   // 주문번호
+                    })
+                }).done(function (response) {
+                    console.log(response);
+                    // 가맹점 서버 결제 API 성공시 로직
+                    //alert('Please, Check your payment result page!!' + rsp);
+                    alert('결제 완료!' + rsp);
+                    location.reload();
+                })
+            } else {
+                // alert("success? "+ rsp.success+ ", 결제에 실패하였습니다. 에러 내용: " + JSON.stringify(rsp));
+                alert('결제 실패!' + rsp);
+                location.reload();
+            }
+        });
 }
 </script>
 </body>
