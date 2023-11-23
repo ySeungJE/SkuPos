@@ -1,9 +1,6 @@
 package springFinal.POS.domain.payment;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +15,10 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long price;
+
+    @Enumerated(EnumType.STRING)
     private PaymentStatus status;
+
     private String paymentUid; // 결제 고유 번호
     public void changePaymentBySuccess(PaymentStatus status, String paymentUid) {
         this.status = status;
