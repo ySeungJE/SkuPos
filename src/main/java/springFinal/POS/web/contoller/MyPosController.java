@@ -21,9 +21,12 @@ import springFinal.POS.domain.User.User;
 import springFinal.POS.domain.User.service.UserService;
 import springFinal.POS.domain.order.Order;
 import springFinal.POS.domain.order.service.OrderService;
+import springFinal.POS.domain.payment.PaymentStatus;
 import springFinal.POS.domain.payment.service.PaymentService;
+import springFinal.POS.domain.payment.service.RefundService;
 import springFinal.POS.web.dto.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -31,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
+import static springFinal.POS.WebConfig.apiKey;
+import static springFinal.POS.WebConfig.secretKey;
 import static springFinal.POS.domain.Item.repository.ItemRepository.ItemMapping;
 
 @Slf4j
@@ -42,6 +47,7 @@ public class MyPosController {
     private final MyPosService myPosService;
     private final PaymentService paymentService;
     private final OrderService orderService;
+    private final RefundService refundService;
     public static final String LOGIN_USER = "loginUser";
 
     @GetMapping("/")
@@ -242,6 +248,35 @@ public class MyPosController {
 
         return new ResponseEntity<>(iamportResponse, HttpStatus.OK);
     }
+
+    @ResponseBody
+    @GetMapping("/getToken")
+    public String refundTest() throws IOException {
+        String token = refundService.getToken(apiKey, secretKey);
+        log.info("{}", token);
+        return token;
+    }
+
+    @ResponseBody
+    @PostMapping("/refund/{orderId}")
+    public String refund(@PathVariable Long orderId) throws IOException {
+        String token = refundService.getToken(apiKey, secretKey);
+
+        log.info("{}", token);
+
+        String result = refundService.refundRequest(token, orderId, "테스트 결제 취소요청");
+
+        return result;
+    }
+
+    @GetMapping("/orderList")
+    public String orderList(Model model) {
+        List<Order> all = orderService.findAll();
+        model.addAttribute("orderList", all);
+        log.info("이거 안나옴? {}", all);
+        return "orderList";
+    }
+
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
         myPosService.startPos();

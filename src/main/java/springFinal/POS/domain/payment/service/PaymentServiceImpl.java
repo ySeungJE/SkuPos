@@ -40,7 +40,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .buyerEmail(order.getEmail())
                 .buyerAddress(order.getAddress())
                 .paymentPrice(order.getPrice())
-                .itemName("'"+order.getItemList().get(0) + "' 외의 상품 " + order.getItemList().size()+"개")
+                .itemName("'"+order.getItemList().get(0) + "' 외의 상품 " + (order.getItemList().size()-1) +"개")
                 .orderUid(order.getOrderUid())
                 .build();
     }

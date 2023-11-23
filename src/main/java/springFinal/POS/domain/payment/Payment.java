@@ -24,4 +24,8 @@ public class Payment {
         this.status = status;
         this.paymentUid = paymentUid;
     }
+
+    public void updateStatus(PaymentStatus status) {
+        this.status = status;
+    }
 }

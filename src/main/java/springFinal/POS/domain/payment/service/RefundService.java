@@ -6,18 +6,27 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import springFinal.POS.domain.order.Order;
+import springFinal.POS.domain.order.repository.OrderRepository;
+import springFinal.POS.domain.payment.repository.PaymentRepository;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.URL;
 import java.util.Map;
 
+import static springFinal.POS.domain.payment.PaymentStatus.*;
+
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class RefundService {
-    public void refundRequest(String access_token, String merchant_uid, String reason) throws IOException {
+    private final OrderRepository orderRepository;
+    public String refundRequest(String access_token, Long orderId, String reason) throws IOException {
+
+        Order order = orderRepository.findById(orderId).orElse(null);
+
         URL url = new URL("https://api.iamport.kr/payments/cancel");
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
 
@@ -34,7 +43,7 @@ public class RefundService {
 
         // JSON 객체에 해당 API가 필요로하는 데이터 추가.
         JsonObject json = new JsonObject();
-        json.addProperty("merchant_uid", merchant_uid);
+        json.addProperty("merchant_uid", order.getOrderUid());
         json.addProperty("reason", reason);
  
         // 출력 스트림으로 해당 conn에 요청
@@ -47,8 +56,10 @@ public class RefundService {
         BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         br.close();
         conn.disconnect();
- 
-        log.info("결제 취소 완료 : 주문 번호 {}", merchant_uid);
+
+        order.getPayment().updateStatus(CANCEL);
+
+        return "결제 취소 완료 : 주문 번호" + order.getOrderUid();
     }
 
     public String getToken(String apiKey, String secretKey) throws IOException {
