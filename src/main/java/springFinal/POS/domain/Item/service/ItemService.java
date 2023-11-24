@@ -1,6 +1,7 @@
 package springFinal.POS.domain.Item.service;
 
 import springFinal.POS.domain.Item.Item;
+import springFinal.POS.domain.order.Order;
 import springFinal.POS.web.dto.ItemsDataDto;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface ItemService {
     List<Item> findAll();
     List<ItemMapping> findAllName();
     void addStock(String name, Integer stock, String date);
-    void  itemSale(List<ItemsDataDto> itemDataList);
+    void  itemSale(List<ItemsDataDto> itemDataList, Long orderId);
     void deleteItem(String itemName);
     void recover(Item item);
 }

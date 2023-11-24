@@ -29,7 +29,18 @@ public class Order {
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
+
     @ElementCollection
     @Builder.Default
     public List<String> itemList = new ArrayList<>(); //여기에는 모든 아이템을 담되, 결제 시스템에 넣을 때는 '첫번째 아이템 외 3개'로
+
+    @ElementCollection
+    @Builder.Default
+    public List<String> saleDate = new ArrayList<>();
+
+    public void updateSaleDate(String day, String week, String month) {
+        this.saleDate.add(day);
+        this.saleDate.add(week);
+        this.saleDate.add(month);
+    }
 }

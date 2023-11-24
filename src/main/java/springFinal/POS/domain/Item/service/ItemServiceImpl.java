@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springFinal.POS.domain.Item.Item;
 import springFinal.POS.domain.Item.repository.ItemRepository;
+import springFinal.POS.domain.order.Order;
+import springFinal.POS.domain.order.repository.OrderRepository;
+import springFinal.POS.domain.order.service.OrderService;
 import springFinal.POS.web.dto.ItemsDataDto;
 
 import java.text.SimpleDateFormat;
@@ -21,6 +24,7 @@ import static springFinal.POS.domain.Item.repository.ItemRepository.*;
 @Slf4j
 public class ItemServiceImpl implements ItemService{
     private final ItemRepository itemRepository;
+    private final OrderRepository orderRepository;
     @Override
     public void addStock(String name, Integer stock, String date) {
         findByName(name).addStock(stock, date);
@@ -52,7 +56,7 @@ public class ItemServiceImpl implements ItemService{
         return itemRepository.findAllBy(ItemMapping.class);
     }
     @Override
-    public void itemSale(List<ItemsDataDto> itemDataList) {
+    public void itemSale(List<ItemsDataDto> itemDataList, Long orderId) {
 
         DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -78,6 +82,12 @@ public class ItemServiceImpl implements ItemService{
         String edDt = formatter.format(cal.getTime());
 
         String week = stDt + " ~ " + edDt;
+
+        Order order = orderRepository.findById(orderId).orElse(null);
+
+        order.updateSaleDate(day, week, month);
+
+        log.info("{} {} {}", day, week, month);
 
         itemDataList.forEach(itemData -> {
             Item item = itemRepository.findByName(itemData.getItemName()).orElse(null);

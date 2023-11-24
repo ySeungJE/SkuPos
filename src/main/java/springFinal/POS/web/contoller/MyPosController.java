@@ -136,9 +136,9 @@ public class MyPosController {
         List<String> collect = saleData.getItemDataList().stream().map(dto ->
                 dto.getItemName()).collect(toList());
 
-        itemService.itemSale(saleData.getItemDataList());
-        myPosService.updateTurnover(saleData.getSummary());
         Order order = orderService.itemOrder(sessionUser.getName(), Long.valueOf(saleData.getSummary()), collect);
+        itemService.itemSale(saleData.getItemDataList(), order.getId());
+        myPosService.updateTurnover(saleData.getSummary());
 
         RequestPayDto requestDto = paymentService.findRequestDto(order.getOrderUid());
 
