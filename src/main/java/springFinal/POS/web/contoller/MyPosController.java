@@ -250,14 +250,6 @@ public class MyPosController {
     }
 
     @ResponseBody
-    @GetMapping("/getToken")
-    public String refundTest() throws IOException {
-        String token = refundService.getToken(apiKey, secretKey);
-        log.info("{}", token);
-        return token;
-    }
-
-    @ResponseBody
     @PostMapping("/refund/{orderId}")
     public String refund(@PathVariable Long orderId) throws IOException {
         String token = refundService.getToken(apiKey, secretKey);

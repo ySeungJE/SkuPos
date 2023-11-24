@@ -6,6 +6,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import springFinal.POS.domain.Item.Item;
+import springFinal.POS.domain.Item.repository.ItemRepository;
+import springFinal.POS.domain.Pos.repository.MyPosRepository;
 import springFinal.POS.domain.order.Order;
 import springFinal.POS.domain.order.repository.OrderRepository;
 import springFinal.POS.domain.payment.repository.PaymentRepository;
@@ -14,6 +17,7 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.URL;
 import java.util.Map;
+import java.util.Optional;
 
 import static springFinal.POS.domain.payment.PaymentStatus.*;
 
@@ -23,6 +27,8 @@ import static springFinal.POS.domain.payment.PaymentStatus.*;
 @Service
 public class RefundService {
     private final OrderRepository orderRepository;
+    private final ItemRepository itemRepository;
+    private final MyPosRepository myPosRepository;
     public String refundRequest(String access_token, Long orderId, String reason) throws IOException {
 
         Order order = orderRepository.findById(orderId).orElse(null);
@@ -58,6 +64,14 @@ public class RefundService {
         conn.disconnect();
 
         order.getPayment().updateStatus(CANCEL);
+
+        for (String itemName : order.getItemList()) {
+            Item item = itemRepository.findByName(itemName).orElse(null);
+            String saleDay = order.getSaleDate().get("day");
+            String saleWeek = order.getSaleDate().get("week");
+            String saleMonth = order.getSaleDate().get("month");
+//            item.getDaySales().put(saleDay, item.getDaySales().get(saleDay));
+        }
 
         return "결제 취소 완료 : 주문 번호" + order.getOrderUid();
     }
