@@ -10,6 +10,7 @@ import springFinal.POS.domain.payment.PaymentStatus;
 import springFinal.POS.domain.payment.repository.PaymentRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -20,7 +21,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
 
     @Override
-    public Order itemOrder(String userName, Long price, List<String> itemList) {
+    public Order itemOrder(String userName, Integer price, Map<String, Integer> itemData) {
 
         // 임시 결제내역 생성
         Payment payment = Payment.builder()
@@ -35,11 +36,19 @@ public class OrderServiceImpl implements OrderService {
                 .price(price)
                 .address("임시 주소")
                 .email("dbstmdwp98@naver.com")
-                .itemList(itemList)
+                .itemData(itemData)
                 .orderUid(UUID.randomUUID().toString())
                 .payment(payment)
                 .userName(userName)
                 .build();
+
+        String itemName = "";
+        for (Map.Entry<String, Integer> entry : order.getItemData().entrySet()) {
+            itemName += "| "+entry.getKey() + " " +entry.getValue() + "개 ";
+        }
+
+        order.updateTitle(itemName);
+
 
         return orderRepository.save(order);
     }

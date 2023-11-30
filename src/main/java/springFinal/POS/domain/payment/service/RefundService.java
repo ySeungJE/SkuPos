@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import springFinal.POS.domain.Item.Item;
 import springFinal.POS.domain.Item.repository.ItemRepository;
+import springFinal.POS.domain.Pos.MyPos;
 import springFinal.POS.domain.Pos.repository.MyPosRepository;
 import springFinal.POS.domain.order.Order;
 import springFinal.POS.domain.order.repository.OrderRepository;
@@ -64,14 +65,21 @@ public class RefundService {
         conn.disconnect();
 
         order.getPayment().updateStatus(CANCEL);
+        String saleDay = order.getSaleDate().get("day");
+        String saleWeek = order.getSaleDate().get("week");
+        String saleMonth = order.getSaleDate().get("month");
 
-        for (String itemName : order.getItemList()) {
-            Item item = itemRepository.findByName(itemName).orElse(null);
-            String saleDay = order.getSaleDate().get("day");
-            String saleWeek = order.getSaleDate().get("week");
-            String saleMonth = order.getSaleDate().get("month");
-//            item.getDaySales().put(saleDay, item.getDaySales().get(saleDay));
+        for (Map.Entry<String, Integer> entry : order.getItemData().entrySet()) {
+            Item item = itemRepository.findByName(entry.getKey()).orElse(null);
+
+            item.getDaySales().put(saleDay, item.getDaySales().get(saleDay) -  entry.getValue());
+            item.getWeekSales().put(saleWeek, item.getWeekSales().get(saleWeek) -  entry.getValue());
+            item.getMonthSales().put(saleMonth, item.getMonthSales().get(saleMonth) -  entry.getValue());
         }
+
+        MyPos myPos = myPosRepository.findAll().get(0);
+
+        myPos.updateTurnover(Integer.parseInt("-"+order.getPrice()),saleDay,saleWeek,saleMonth);
 
         return "결제 취소 완료 : 주문 번호" + order.getOrderUid();
     }

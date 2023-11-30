@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -127,16 +128,21 @@ public class MyPosController {
         });
         return "redirect:/dropItem";
     }
+
+    // 오케이 합치자. order보다 requestDto를 먼저 만들고 결제를 진행ㅎ
     @PostMapping("/payment")
     @ResponseBody
     public MessageDTO payment(Model model, @RequestBody SaleData saleData, HttpServletRequest request) {
         if(saleData.getSummary()==0) return new MessageDTO("하나 이상의 상품을 담아주세요");
         User sessionUser = userService.getSessionUser(request);
 
-        List<String> collect = saleData.getItemDataList().stream().map(dto ->
-                dto.getItemName()).collect(toList());
+        Map<String, Integer> itemData = new HashMap<>();
 
-        Order order = orderService.itemOrder(sessionUser.getName(), Long.valueOf(saleData.getSummary()), collect);
+        for (ItemsDataDto dto : saleData.getItemDataList()) {
+            itemData.put(dto.getItemName(), dto.getSaleNumber());
+        }
+
+        Order order = orderService.itemOrder(sessionUser.getName(), saleData.getSummary(), itemData);
         itemService.itemSale(saleData.getItemDataList(), order.getId());
         myPosService.updateTurnover(saleData.getSummary());
 
@@ -239,6 +245,7 @@ public class MyPosController {
         return "redirect:/addStock";
     }
 
+    //하나로 합치자.
     @ResponseBody
     @PostMapping("/paymentProcess")
     public ResponseEntity<IamportResponse<Payment>> validationPayment(@RequestBody PaymentCallbackRequest request) {
@@ -249,7 +256,6 @@ public class MyPosController {
         return new ResponseEntity<>(iamportResponse, HttpStatus.OK);
     }
 
-    @ResponseBody
     @PostMapping("/refund/{orderId}")
     public String refund(@PathVariable Long orderId) throws IOException {
         String token = refundService.getToken(apiKey, secretKey);
@@ -258,14 +264,13 @@ public class MyPosController {
 
         String result = refundService.refundRequest(token, orderId, "테스트 결제 취소요청");
 
-        return result;
+        return "redirect:/orderList";
     }
 
     @GetMapping("/orderList")
     public String orderList(Model model) {
         List<Order> all = orderService.findAll();
         model.addAttribute("orderList", all);
-        log.info("이거 안나옴? {}", all);
         return "orderList";
     }
 

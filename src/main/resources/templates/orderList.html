@@ -9,7 +9,7 @@
     <table>
         <tr>
             <th>구매자</th>
-            <th>이메일</th>
+            <th>구매일자</th>
             <th>구매 상품</th>
             <th>총 금액</th>
             <th>결제 상태</th>
@@ -18,8 +18,8 @@
         <tr th:each="orderData : ${orderList}">
             <form th:action="|/refund/${orderData.id}|" method="POST">
                 <td th:text="${orderData.userName}" id="userName"></td>
-                <td th:text="${orderData.email}" id="email"></td>
-                <td th:text="${orderData.itemList.get(0)}+' 외의 상품 ' + (${orderData.itemList.size()}-1) +'개'" id="itemName"></td>
+                <td th:text="${orderData.saleDate.get('day')}" id="saleDate"></td>
+                <td th:text="${orderData.title}" id="itemName"></td>
                 <td th:text="${orderData.price}+'원'" id="price"></td>
                 <td th:text="${orderData.payment.getStatus()}"></td>
                 <td><button th:if="${orderData.payment.status.name()=='OK'}" type="submit">환불</button></td>
