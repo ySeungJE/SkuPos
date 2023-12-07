@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface OrderService {
-    Order itemOrder(String userName, Integer price, Map<String, Integer> itemData); // 자동 주문
+
+    Order itemOrder(String userName, Integer price, Map<String, Integer> itemData, String orderUid);
 
     Order findById(Long id);
 

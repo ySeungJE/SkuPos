@@ -8,16 +8,18 @@ import com.siot.IamportRestClient.response.Payment;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import springFinal.POS.domain.User.User;
 import springFinal.POS.domain.order.Order;
 import springFinal.POS.domain.order.repository.OrderRepository;
 import springFinal.POS.domain.payment.PaymentStatus;
 import springFinal.POS.domain.payment.repository.PaymentRepository;
 import springFinal.POS.web.dto.PaymentCallbackRequest;
 import springFinal.POS.web.dto.RequestPayDto;
+import springFinal.POS.web.dto.SaleData;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -41,6 +43,18 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentPrice(order.getPrice())
                 .itemName("testName")
                 .orderUid(order.getOrderUid())
+                .build();
+    }
+    @Override
+    public RequestPayDto findRequestDto2(SaleData saleData, User user) {
+
+        return RequestPayDto.builder()
+                .buyerName(user.getName())
+                .buyerEmail("dbstmdwp98@naver.com")
+                .buyerAddress("임시 주소")
+                .paymentPrice(saleData.getSummary())
+                .itemName("testName")
+                .orderUid(UUID.randomUUID().toString())
                 .build();
     }
 

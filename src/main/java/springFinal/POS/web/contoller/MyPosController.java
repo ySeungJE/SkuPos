@@ -133,20 +133,9 @@ public class MyPosController {
     @PostMapping("/payment")
     @ResponseBody
     public MessageDTO payment(Model model, @RequestBody SaleData saleData, HttpServletRequest request) {
-        if(saleData.getSummary()==0) return new MessageDTO("하나 이상의 상품을 담아주세요");
         User sessionUser = userService.getSessionUser(request);
 
-        Map<String, Integer> itemData = new HashMap<>();
-
-        for (ItemsDataDto dto : saleData.getItemDataList()) {
-            itemData.put(dto.getItemName(), dto.getSaleNumber());
-        }
-
-        Order order = orderService.itemOrder(sessionUser.getName(), saleData.getSummary(), itemData);
-        itemService.itemSale(saleData.getItemDataList(), order.getId());
-        myPosService.updateTurnover(saleData.getSummary());
-
-        RequestPayDto requestDto = paymentService.findRequestDto(order.getOrderUid());
+        RequestPayDto requestDto = paymentService.findRequestDto2(saleData, sessionUser);
 
         log.info("{}", requestDto);
         return new MessageDTO("결제 완료되었습니다!","결제 완료되었습니다!2", requestDto);
@@ -248,7 +237,21 @@ public class MyPosController {
     //하나로 합치자.
     @ResponseBody
     @PostMapping("/paymentProcess")
-    public ResponseEntity<IamportResponse<Payment>> validationPayment(@RequestBody PaymentCallbackRequest request) {
+    public ResponseEntity<IamportResponse<Payment>> validationPayment(@RequestBody PaymentCallbackRequest request, HttpServletRequest servletRequest) {
+
+        User sessionUser = userService.getSessionUser(servletRequest);
+        Map<String, Integer> itemData = new HashMap<>();
+
+        log.info("{}", request);
+
+        for (ItemsDataDto dto : request.getItemDataList()) {
+            itemData.put(dto.getItemName(), dto.getSaleNumber());
+        }
+
+        Order order = orderService.itemOrder(sessionUser.getName(), request.getSummary(), itemData, request.getOrderUid());
+        itemService.itemSale(request.getItemDataList(), order.getId());
+        myPosService.updateTurnover(request.getSummary());
+
         IamportResponse<Payment> iamportResponse = paymentService.paymentByCallback(request);
 
         log.info("결제 응답={}", iamportResponse.getResponse().toString());

@@ -21,7 +21,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
 
     @Override
-    public Order itemOrder(String userName, Integer price, Map<String, Integer> itemData) {
+    public Order itemOrder(String userName, Integer price, Map<String, Integer> itemData, String orderUid) {
 
         // 임시 결제내역 생성
         Payment payment = Payment.builder()
@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
                 .address("임시 주소")
                 .email("dbstmdwp98@naver.com")
                 .itemData(itemData)
-                .orderUid(UUID.randomUUID().toString())
+                .orderUid(orderUid)
                 .payment(payment)
                 .userName(userName)
                 .build();
