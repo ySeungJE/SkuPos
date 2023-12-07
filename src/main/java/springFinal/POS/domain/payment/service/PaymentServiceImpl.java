@@ -17,6 +17,7 @@ import springFinal.POS.web.dto.RequestPayDto;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -33,14 +34,12 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = orderRepository.findByOrderUid(orderUid)
                 .orElseThrow(() -> new IllegalArgumentException("주문이 없습니다."));
 
-
-
         return RequestPayDto.builder()
                 .buyerName(order.getUserName())
                 .buyerEmail(order.getEmail())
                 .buyerAddress(order.getAddress())
                 .paymentPrice(order.getPrice())
-                .itemName("'"+order.getItemList().get(0) + "' 외의 상품 " + (order.getItemList().size()-1) +"개")
+                .itemName("testName")
                 .orderUid(order.getOrderUid())
                 .build();
     }
@@ -65,7 +64,7 @@ public class PaymentServiceImpl implements PaymentService {
             }
 
             // DB에 저장된 결제 금액
-            Long price = order.getPayment().getPrice();
+            Integer price = order.getPayment().getPrice();
             // 실 결제 금액
             int iamportPrice = iamportResponse.getResponse().getAmount().intValue();
 

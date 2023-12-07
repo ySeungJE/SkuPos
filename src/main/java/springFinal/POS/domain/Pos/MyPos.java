@@ -2,12 +2,15 @@ package springFinal.POS.domain.Pos;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.*;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor @Builder
+@Slf4j
 public class MyPos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,25 +47,26 @@ public class MyPos {
      * @param month
      */
     public void updateTurnover(Integer summary, String day, String week, String month) {
+        log.info("업데이트 될 금액은 {}", summary);
         balance += summary;
 
-        if (dayTurnover.containsKey(day)) {
-            dayTurnover.put(day, dayTurnover.get(day) + summary);
-        } else {
-            dayTurnover.put(day, summary);
-        }
+//        if (dayTurnover.containsKey(day)) {
+            dayTurnover.put(day, dayTurnover.getOrDefault(day, 0) + summary);
+//        } else {
+//            dayTurnover.put(day, summary);
+//        }
 
-        if (weekTurnover.containsKey(week)) {
-            weekTurnover.put(week, weekTurnover.get(week) + summary);
-        } else {
-            weekTurnover.put(week, summary);
-        }
+//        if (weekTurnover.containsKey(week)) {
+            weekTurnover.put(week, weekTurnover.getOrDefault(week, 0) + summary);
+//        } else {
+//            weekTurnover.put(week, summary);
+//        }
 
-        if (monthTurnover.containsKey(month)) {
-            monthTurnover.put(month, monthTurnover.get(month) + summary);
-        } else {
-            monthTurnover.put(month, summary);
-        }
+//        if (monthTurnover.containsKey(month)) {
+            monthTurnover.put(month, monthTurnover.getOrDefault(month, 0) + summary);
+//        } else {
+//            monthTurnover.put(month, summary);
+//        }
     }
 
     /**

@@ -89,6 +89,7 @@ public class ItemServiceImpl implements ItemService{
 
         log.info("{} {} {}", day, week, month);
 
+        // 여기서 map<날짜, 개수>을 생성해서 넣어주자. 통째로 넣는게 안되면 entry 반복으로 넣어주면 그만
         itemDataList.forEach(itemData -> {
             Item item = itemRepository.findByName(itemData.getItemName()).orElse(null);
             item.itemSale(itemData.getSaleNumber(), day, week, month);

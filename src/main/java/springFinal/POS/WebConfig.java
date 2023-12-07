@@ -13,14 +13,14 @@ import springFinal.POS.web.interceptor.LoginCheckInterceptor;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//
-//        registry.addInterceptor(new LoginCheckInterceptor())
-//                .order(1)
-//                .addPathPatterns("/**")
-//                .excludePathPatterns("/", "/join", "/login", "/error", "/notLoginUser");
-//    }
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+
+        registry.addInterceptor(new LoginCheckInterceptor())
+                .order(1)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/", "/join", "/login", "/error", "/notLoginUser");
+    }
 
     public static final String apiKey = "5874574837427237";
     public static final String secretKey = "jAMTXhZI0eRE46qwC00y4tBUQy9KGwuLO38ny4ccuRJlQ3TwRkrNDJ6ny2hMu8H5oF3yPJzr4TboNQ2b";
