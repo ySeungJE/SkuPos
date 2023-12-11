@@ -134,6 +134,7 @@ public class MyPosController {
     @ResponseBody
     public MessageDTO payment(Model model, @RequestBody SaleData saleData, HttpServletRequest request) {
         User sessionUser = userService.getSessionUser(request);
+        log.info("{}", saleData);
 
         RequestPayDto requestDto = paymentService.findRequestDto2(saleData, sessionUser);
 

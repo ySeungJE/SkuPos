@@ -153,9 +153,6 @@ getElement("summary").onclick = function(){
   }
 
 var itemData = [];
-// 여기서 saleData 담아서 controller에서 payDto만 생성해서 response
-// done -> requestPay(payDto)를 불러
-// done -> saleData랑 payDto를 담아서 order를 만드는 controller에 요청해 / 끝. done으로 만들면 datasend랑 requestPay 하나로 합칠 수 있을듯
 function dataSend() {
 
     var productTable = getElement("product-list").querySelector("table");
@@ -171,7 +168,6 @@ function dataSend() {
           saleNumber : number
       };
 
-
       itemData.push(data);
       }
     }
@@ -186,116 +182,48 @@ function dataSend() {
         }),
         dataType: 'json',
         contentType: "application/json; charset=utf-8",
-        success: function (res) {
-            // requestPay(res.payDto);
+    }).done(function (res) {
+        var payDto = res.payDto;
 
-            var payDto = res.payDto;
-
-            var orderUid = payDto.order_uid;
-            var itemName = payDto.item_name;
-            var paymentPrice = payDto.payment_price;
-            var buyerName = payDto.buyer_name;
-            var buyerEmail = payDto.buyer_email;
-            var buyerAddress = payDto.buyer_address;
-
-            IMP.request_pay({
-                    pg : 'html5_inicis.INIpayTest',
-                    pay_method : 'card',
-                    merchant_uid: orderUid, // 주문 번호
-                    name : itemName, // 상품 이름
-                    amount : paymentPrice, // 상품 가격
-                    buyer_email : buyerEmail, // 구매자 이메일
-                    buyer_name : buyerName, // 구매자 이름
-                    buyer_tel : '010-1234-5678', // 임의의 값
-                    buyer_addr : buyerAddress, // 구매자 주소
-                    buyer_postcode : '123-456', // 임의의 값
-                },
-                function(rsp) {
-                    if (rsp.success) {
-                        alert('call back!!: ' + JSON.stringify(rsp));
-                        // 결제 성공 시: 결제 승인 또는 가상계좌 발급에 성공한 경우
-                        // jQuery로 HTTP 요청
-                        jQuery.ajax({
-                            url: "/paymentProcess",
-                            method: "POST",
-                            headers: {"Content-Type": "application/json"},
-                            data: JSON.stringify({
-                                "payment_uid": rsp.imp_uid,      // 결제 고유번호
-                                "order_uid": rsp.merchant_uid,   // 주문번호
-                                "summary": total,
-                                "itemDataList": itemData
-                            })
-                        }).done(function (response) {
-                            console.log(itemData)
-                            console.log(response);
-                            // 가맹점 서버 결제 API 성공시 로직
-                            //alert('Please, Check your payment result page!!' + rsp);
-                            alert('결제 완료!' + rsp);
-                            location.reload();
-                        })
-                    } else { // 실패시 order는 안 만들어지니까 ㄴ상관
-                        // alert("success? "+ rsp.success+ ", 결제에 실패하였습니다. 에러 내용: " + JSON.stringify(rsp));
-                        // 여기에서 새로운 function을 하나 넣어서 실패 시 order는 ready로 남지만
-                        alert('결제 실패!' + rsp);
+        IMP.request_pay({
+                pg : 'html5_inicis.INIpayTest',
+                pay_method : 'card',
+                merchant_uid: payDto.order_uid, // 주문 번호
+                name : payDto.item_name, // 상품 이름
+                amount : payDto.payment_price, // 상품 가격
+                buyer_email : payDto.buyer_email, // 구매자 이메일
+                buyer_name : payDto.buyer_name, // 구매자 이름
+                buyer_tel : '010-1234-5678', // 임의의 값
+                buyer_addr : payDto.buyer_address, // 구매자 주소
+                buyer_postcode : '123-456', // 임의의 값
+            },
+            function(rsp) {
+                if (rsp.success) {
+                    // 결제 성공 시: 결제 승인 또는 가상계좌 발급에 성공한 경우
+                    // jQuery로 HTTP 요청
+                    $.ajax({
+                        url: "/paymentProcess",
+                        method: "POST",
+                        traditional: true,
+                        data: JSON.stringify({
+                            paymentUid : rsp.imp_uid,      // 결제 고유번호
+                            orderUid : rsp.merchant_uid,   // 주문번호
+                            summary : total,
+                            itemDataList : itemData
+                        }),
+                        dataType: 'json',
+                        contentType: "application/json; charset=utf-8",
+                    }).done(function (response) {
+                        console.log(response);
+                        alert('결제 완료!');
                         location.reload();
-                    }
-                });
-        }
-    }).done(function (response) {
-
-    });
-}
-
-// 그냥 새로운 ajax랑 controller의 response로 payDto만 가지고 와서 얘 호출
-function requestPay(payDto) {
-
-    var orderUid = payDto.order_uid;
-    var itemName = payDto.item_name;
-    var paymentPrice = payDto.payment_price;
-    var buyerName = payDto.buyer_name;
-    var buyerEmail = payDto.buyer_email;
-    var buyerAddress = payDto.buyer_address;
-
-    IMP.request_pay({
-            pg : 'html5_inicis.INIpayTest',
-            pay_method : 'card',
-            merchant_uid: orderUid, // 주문 번호
-            name : itemName, // 상품 이름
-            amount : paymentPrice, // 상품 가격
-            buyer_email : buyerEmail, // 구매자 이메일
-            buyer_name : buyerName, // 구매자 이름
-            buyer_tel : '010-1234-5678', // 임의의 값
-            buyer_addr : buyerAddress, // 구매자 주소
-            buyer_postcode : '123-456', // 임의의 값
-        },
-        function(rsp) {
-            if (rsp.success) {
-                alert('call back!!: ' + JSON.stringify(rsp));
-                // 결제 성공 시: 결제 승인 또는 가상계좌 발급에 성공한 경우
-                // jQuery로 HTTP 요청
-                jQuery.ajax({
-                    url: "/paymentProcess",
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    data: JSON.stringify({
-                        "payment_uid": rsp.imp_uid,      // 결제 고유번호
-                        "order_uid": rsp.merchant_uid   // 주문번호
                     })
-                }).done(function (response) {
-                    dataSend(); // 그 다음 호출된 얘는 payDto 정보를 파라미터로 받아서 같은 정보로 order 생성?
-                    console.log(response);
-                    // 가맹점 서버 결제 API 성공시 로직
-                    //alert('Please, Check your payment result page!!' + rsp);
-                    alert('결제 완료!' + rsp);
+                } else { // 실패시 order는 안 만들어지니까 ㄴ상관
+                    alert('결제 실패!');
                     location.reload();
-                })
-            } else { // 실패시 order는 안 만들어지니까 ㄴ상관
-                // alert("success? "+ rsp.success+ ", 결제에 실패하였습니다. 에러 내용: " + JSON.stringify(rsp));
-                // 여기에서 새로운 function을 하나 넣어서 실패 시 order는 ready로 남지만
-                alert('결제 실패!' + rsp);
-                location.reload();
-            }
-        });
+                }
+            });
+    });
 }
 </script>
 </body>
